@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/olshom/ShoppingCart.git'
+                url: 'https://github.com/olshom/shoppingCart.git'
             }
         }
         stage('Build') {
