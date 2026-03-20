@@ -3,7 +3,7 @@ pipeline {
      environment {
             JAVA_HOME = '/usr/lib/jvm/java-21-openjdk'
             DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
-            DOCKERHUB_REPO = 'olgasho/temperatureconverter'
+            DOCKERHUB_REPO = 'olgasho/ShoppingCart'
             DOCKER_IMAGE_TAG = 'latest'
          }
 
@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/olshom/TemperatureConverter.git'
+                url: 'https://github.com/olshom/ShoppingCart.git'
             }
         }
         stage('Build') {
