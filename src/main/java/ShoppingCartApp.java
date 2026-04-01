@@ -11,7 +11,7 @@ public class ShoppingCartApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/shopping_cart.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 500);
-        primaryStage.setTitle("Shopping Cart App");
+        primaryStage.setTitle("Olga Shomarova");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
