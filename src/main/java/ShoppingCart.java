@@ -9,6 +9,7 @@ public class ShoppingCart {
             case 2: return new Locale("fi", "FI");
             case 3: return new Locale("sv", "SE");
             case 4: return new Locale("ja", "JP");
+            case 5: return new Locale("ar", "AR");
             default: return new Locale("en", "US");
         }
     }

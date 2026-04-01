@@ -39,7 +39,8 @@ public class TestShoppingCart {
         "1, en, US",
         "2, fi, FI",
         "3, sv, SE",
-        "4, ja, JP"
+        "4, ja, JP",
+        "5, ar, AR"
     })
     void testValidLanguageChoices(int choice, String language, String country) {
         Locale locale = ShoppingCart.getLocale(choice);
@@ -66,7 +67,8 @@ public class TestShoppingCart {
         "en, US",
         "fi, FI",
         "sv, SE",
-        "ja, JP"
+        "ja, JP",
+        "ar, AR"
     })
     void testResourceBundleLoadsAllKeys(String language, String country) {
         Locale locale = new Locale(language, country);
