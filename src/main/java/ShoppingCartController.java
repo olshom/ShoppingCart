@@ -26,7 +26,8 @@ public class ShoppingCartController {
     @FXML private Button calculateBtn;
     @FXML private Label totalLabel;
 
-    private ResourceBundle bundle;
+    private LocalizationService localizationService;
+    private CartService cartService;
     private final List<TextField> priceFields = new ArrayList<>();
     private final List<TextField> quantityFields = new ArrayList<>();
 
@@ -36,21 +37,21 @@ public class ShoppingCartController {
                 "English", "Finnish", "Swedish", "Japanese", "Arabic"
         ));
         languageComboBox.getSelectionModel().selectFirst();
-        bundle = ResourceBundle.getBundle("MessagesBundle", new Locale("en", "US"));
+        localizationService = new LocalizationService("English");
+        cartService = new CartService();
         updateUI();
     }
 
     @FXML
     private void onConfirmLanguage() {
-        int selectedIndex = languageComboBox.getSelectionModel().getSelectedIndex();
-        Locale locale = ShoppingCart.getLocale(selectedIndex + 1);
-        bundle = ResourceBundle.getBundle("MessagesBundle", locale);
+        String language = languageComboBox.getSelectionModel().getSelectedItem();
+        localizationService = new LocalizationService(language);
         updateUI();
         rebuildItemLabels();
 
         // Handle Arabic RTL
         VBox root = (VBox) languageLabel.getScene().getRoot();
-        if ("ar".equals(locale.getLanguage())) {
+        if ("Arabic".equals(localizationService.getSelectedLanguage())) {
             root.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
         } else {
             root.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
@@ -76,11 +77,11 @@ public class ShoppingCartController {
             HBox row = new HBox(10);
             row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-            Label priceLabel = new Label(MessageFormat.format(bundle.getString("priceLabel"), i + 1));
+            Label priceLabel = new Label(MessageFormat.format(localizationService.getTranslation("priceLabel"), i + 1));
             TextField priceField = new TextField();
             priceField.setPrefWidth(80);
 
-            Label quantityLabel = new Label(MessageFormat.format(bundle.getString("quantityLabel"), i + 1));
+            Label quantityLabel = new Label(MessageFormat.format(localizationService.getTranslation("quantityLabel"), i + 1));
             TextField quantityField = new TextField();
             quantityField.setPrefWidth(80);
 
@@ -106,20 +107,22 @@ public class ShoppingCartController {
             }
 
             int total = ShoppingCart.calculateTotal(prices, quantities);
-            totalLabel.setText(bundle.getString("totalLabel") + " " + total);
-        } catch (NumberFormatException e) {
-            totalLabel.setText(bundle.getString("totalLabel") + " Error");
+            totalLabel.setText(localizationService.getTranslation("totalLabel") + " " + total);
+
+            cartService.saveFullCart(prices.length, total, localizationService.getSelectedLanguage(), prices, quantities);
+        } catch (NumberFormatException | java.sql.SQLException e) {
+            totalLabel.setText(localizationService.getTranslation("totalLabel") + " Error");
         }
     }
 
     private void updateUI() {
-        languageLabel.setText(bundle.getString("selectLanguage"));
-        confirmLanguageBtn.setText(bundle.getString("confirmLanguage"));
-        numberOfItemsLabel.setText(bundle.getString("prompt1"));
-        numberOfItemsField.setPromptText(bundle.getString("numberOfItemsPlaceholder"));
-        enterItemsBtn.setText(bundle.getString("enterItems"));
-        calculateBtn.setText(bundle.getString("calculateTotal"));
-        totalLabel.setText(bundle.getString("totalLabel"));
+        languageLabel.setText(localizationService.getTranslation("selectLanguage"));
+        confirmLanguageBtn.setText(localizationService.getTranslation("confirmLanguage"));
+        numberOfItemsLabel.setText(localizationService.getTranslation("prompt1"));
+        numberOfItemsField.setPromptText(localizationService.getTranslation("numberOfItemsPlaceholder"));
+        enterItemsBtn.setText(localizationService.getTranslation("enterItems"));
+        calculateBtn.setText(localizationService.getTranslation("calculateTotal"));
+        totalLabel.setText(localizationService.getTranslation("totalLabel"));
     }
 
     private void rebuildItemLabels() {
@@ -128,8 +131,8 @@ public class ShoppingCartController {
             if (rows.get(i) instanceof HBox row) {
                 Label priceLabel = (Label) row.getChildren().get(0);
                 Label quantityLabel = (Label) row.getChildren().get(2);
-                priceLabel.setText(MessageFormat.format(bundle.getString("priceLabel"), i + 1));
-                quantityLabel.setText(MessageFormat.format(bundle.getString("quantityLabel"), i + 1));
+                priceLabel.setText(MessageFormat.format(localizationService.getTranslation("priceLabel"), i + 1));
+                quantityLabel.setText(MessageFormat.format(localizationService.getTranslation("quantityLabel"), i + 1));
             }
         }
     }
