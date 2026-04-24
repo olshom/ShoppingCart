@@ -1,3 +1,5 @@
+package org.example;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.NodeOrientation;
@@ -37,7 +39,11 @@ public class ShoppingCartController {
                 "English", "Finnish", "Swedish", "Japanese", "Arabic"
         ));
         languageComboBox.getSelectionModel().selectFirst();
-        localizationService = new LocalizationService("English");
+        try {
+            localizationService = new LocalizationService("English");
+        } catch (java.sql.SQLException e) {
+            throw new DatabaseException("Failed to initialize localization", e);
+        }
         cartService = new CartService();
         updateUI();
     }
@@ -45,7 +51,11 @@ public class ShoppingCartController {
     @FXML
     private void onConfirmLanguage() {
         String language = languageComboBox.getSelectionModel().getSelectedItem();
-        localizationService = new LocalizationService(language);
+        try {
+            localizationService = new LocalizationService(language);
+        } catch (java.sql.SQLException e) {
+            throw new DatabaseException("Failed to load language: " + language, e);
+        }
         updateUI();
         rebuildItemLabels();
 

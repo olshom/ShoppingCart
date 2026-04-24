@@ -39,6 +39,13 @@ pipeline {
                 recordCoverage(tools: [[parser: 'JACOCO']])
             }
         }
+                stage('SonarQube Analysis') {
+                    steps {
+                        withSonarQubeEnv('SonarQubeServer') {
+                            sh 'mvn sonar:sonar'
+                        }
+                    }
+                }
         stage('Build Docker Image') {
                   steps {
                       script {

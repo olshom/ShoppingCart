@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="ShoppingCartController">
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.ShoppingCartController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>

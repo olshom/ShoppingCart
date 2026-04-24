@@ -13,6 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>21.0.2</javafx.version>
+        <sonar.token>${SONAR_TOKEN}</sonar.token>
     </properties>
 
     <dependencies>
@@ -43,9 +44,34 @@
         <finalName>SW_week1</finalName>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.basedir}/.env</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.14</version>
+                <configuration>
+                    <excludes>
+                        <exclude>org/example/ShoppingCartApp.class</exclude>
+                        <exclude>org/example/ShoppingCartController.class</exclude>
+                        <exclude>org/example/Launcher.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
@@ -75,7 +101,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>ShoppingCartApp</mainClass>
+                    <mainClass>org.example.ShoppingCartApp</mainClass>
                     <options>
                         <option>--enable-preview</option>
                     </options>
@@ -99,7 +125,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Launcher</mainClass>
+                            <mainClass>org.example.Launcher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
