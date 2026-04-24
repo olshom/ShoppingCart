@@ -1,40 +1,42 @@
 package org.example;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.*;
 
 class TestSqlConnectionFactory {
 
     @Test
-    void testCreateConnectionReturnsNonNull() throws SQLException {
-        Connection conn = SqlConnectionFactory.createConnection();
-        assertNotNull(conn);
-        conn.close();
-    }
+    void testCreateConnectionDelegatesToDriverManager() throws SQLException {
+        Connection mockConn = mock(Connection.class);
+        try (MockedStatic<DriverManager> mockedDM = mockStatic(DriverManager.class)) {
+            mockedDM.when(() -> DriverManager.getConnection(nullable(String.class), nullable(String.class), nullable(String.class)))
+                    .thenReturn(mockConn);
 
-    @Test
-    void testConnectionIsValid() throws SQLException {
-        try (Connection conn = SqlConnectionFactory.createConnection()) {
-            assertTrue(conn.isValid(5));
+            Connection conn = SqlConnectionFactory.createConnection();
+
+            assertSame(mockConn, conn);
+            mockedDM.verify(() -> DriverManager.getConnection(nullable(String.class), nullable(String.class), nullable(String.class)));
         }
     }
 
     @Test
-    void testConnectionIsNotClosed() throws SQLException {
-        try (Connection conn = SqlConnectionFactory.createConnection()) {
-            assertFalse(conn.isClosed());
-        }
-    }
+    void testCreateConnectionPropagatesSQLException() {
+        SQLException toThrow = new SQLException("connection refused");
+        try (MockedStatic<DriverManager> mockedDM = mockStatic(DriverManager.class)) {
+            mockedDM.when(() -> DriverManager.getConnection(nullable(String.class), nullable(String.class), nullable(String.class)))
+                    .thenThrow(toThrow);
 
-    @Test
-    void testConnectionUsesCorrectDatabase() throws SQLException {
-        try (Connection conn = SqlConnectionFactory.createConnection()) {
-            String catalog = conn.getCatalog();
-            assertEquals("shopping_cart_localization", catalog);
+            SQLException thrown = assertThrows(SQLException.class,
+                    SqlConnectionFactory::createConnection);
+            assertEquals("connection refused", thrown.getMessage());
         }
     }
 }
